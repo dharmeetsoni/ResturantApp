@@ -3,7 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_gravity="center"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:gravity="center">
 
 
     <Button
@@ -11,26 +12,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Scan"></Button>
+        android:text="Scan"
+        android:background="@android:color/transparent"
+        android:drawableTop="@drawable/printer"
+        android:visibility="visible"
+        android:textColor="@color/black"></Button>
 
     <Button
         android:id="@+id/mPrint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Print"></Button>
+        android:text="Print"
+        android:visibility="gone"></Button>
 
     <Button
         android:id="@+id/dis"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Dissable"></Button>
+        android:text="Dissable"
+        android:visibility="gone"></Button>
     <Button
         android:id="@+id/loadWebView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Load Website"></Button>
+        android:text="Skip and Continue"
+        android:background="@android:color/transparent"
+        android:textColor="@android:color/holo_green_dark"></Button>
 
 </LinearLayout>

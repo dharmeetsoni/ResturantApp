@@ -2,9 +2,10 @@ package com.stockde.resturantapp.webview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -15,6 +16,7 @@ import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
@@ -22,38 +24,79 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.stockde.resturantapp.ChangeUrl;
 import com.stockde.resturantapp.R;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import com.stockde.resturantapp.sharedpref.SharedData;
 
 import im.delight.android.webview.AdvancedWebView;
-
-//import androidx.appcompat.app.AppCompatActivity;
-
-
 public class MainActivity extends Activity {
 
     private AdvancedWebView webView;
     private String url_load;
+    private ImageView imgMenu;
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("Are you sure you want to exit?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        MainActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.webview_activity);
-        //............................................
 
-        url_load = "http://ecom.stockde.com/";
-        //............................................
-        if (url_load != null && !url_load.isEmpty())
-        //if (false)
-        {
+        SharedData sharedData = new SharedData(this);
+        url_load = sharedData.getUrl();
+        imgMenu = findViewById(R.id.imgMenu);
+
+        imgMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, imgMenu);
+
+                // Inflating popup menu from popup_menu.xml file
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        // Toast messa  ge on menu item clicked
+                        if (menuItem.getItemId() == R.id.changeUrl){
+                            Intent intent = new Intent(MainActivity.this, ChangeUrl.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        if (menuItem.getItemId() == R.id.changePrinter){
+                            Intent intent = new Intent(MainActivity.this, com.stockde.resturantapp.MainActivity.class);
+                            intent.putExtra("isFromChangePrinter",true);
+                            startActivity(intent);
+                            finish();
+                        }
+                        return true;
+                    }
+                });
+                // Showing the popup menu
+                popupMenu.show();
+            }
+        });
+
+        if (url_load != null && !url_load.isEmpty()) {
             webViewClient c = new webViewClient(this);
             webView = findViewById(R.id.webView);
             webView.setWebViewClient(c);
@@ -70,21 +113,13 @@ public class MainActivity extends Activity {
             webView.getSettings().setUseWideViewPort(true);
             webView.getSettings().setLoadWithOverviewMode(true);
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-            //PRINT-----------------------------------------
-            //Call Function from javascript
-
-            //PRINT-----------------------------------------
             webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-            //webView.loadUrl("http://www.stockde.com");
             webView.addJavascriptInterface(new WebAppInterface(this), "PrnAnd");
-
             webView.loadUrl(url_load);
 
         } else {
-            //Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-            //startActivity(intent);
+            Toast.makeText(this,"Something went wrong, Please contact to admin.", Toast.LENGTH_SHORT).show();
         }
-        //............................................
     }
 
     public class WebAppInterface {
@@ -125,74 +160,10 @@ public class MainActivity extends Activity {
 
                 });
 
-                /*    *//* runOnUiThread(() -> doPrint(webView.getUrl(),htmlStr));*//*
-                // Create a WebView object specifically for printing
-                Toast.makeText(mContext, "1", Toast.LENGTH_SHORT).show();
-                AdvancedWebView web_View;
-                web_View = findViewById(R.id.webView);
-                Toast.makeText(mContext, "2", Toast.LENGTH_SHORT).show();
-                web_View.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        Toast.makeText(mContext, "3", Toast.LENGTH_SHORT).show();
-                        createWebPrintJob(view);
-                        Toast.makeText(mContext, "4", Toast.LENGTH_SHORT).show();
-                        webView = null;
-                    }
-                });
-
-                // Generate an HTML document on the fly:
-                Toast.makeText(mContext, "5", Toast.LENGTH_SHORT).show();
-                String htmlDocument = htmlStr;
-                Toast.makeText(mContext, "6", Toast.LENGTH_SHORT).show();
-
-
-                // Keep a reference to WebView object until you pass the PrintDocumentAdapter
-                // to the PrintManager
-                Toast.makeText(mContext, "7", Toast.LENGTH_SHORT).show();
-                webView = web_View;
-                Toast.makeText(mContext, "done", Toast.LENGTH_SHORT).show();*/
-                //createWebPrintJob(textView);
-                //--------------------------------------------------------
-//            @Override
-//            protected void onCreate(Bundle savedInstanceState) {
-//                super.onCreate(savedInstanceState);
-//                setContentView(R.layout.activity_main);
-//                // init webView
-//                webView = (WebView) findViewById(R.id.simpleWebView);
-//                // displaying text in WebView
-//                webView.loadDataWithBaseURL(null, content, "text/html", "utf-8", null);
-//                createWebPrintJob(webView);
-//            }
-                //--------------------------------------------------------
-
             } catch (Exception ex) {
                 Toast.makeText(mContext, ex.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private void createWebPrintJob(WebView webView) {
-
-            PrintManager printManager = (PrintManager) MainActivity.this.getSystemService(Context.PRINT_SERVICE);
-
-            PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter("MyDocument");
-
-            String jobName = getString(R.string.app_name) + " Print Test";
-
-            printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && this.webView.canGoBack()) {
-            this.webView.goBack();
-            return true;
-        }
-
-        return super.onKeyDown(keyCode, event);
-
     }
 
     private void doPrint(String OldUrl1) {
@@ -228,14 +199,8 @@ public class MainActivity extends Activity {
             public void onFinish() {
                 webView.loadUrl(OldUrl1);
                 mWrappedInstance.onFinish();
-                // Intercept the finish call to know when printing is done
-                // and destroy the WebView as it is expensive to keep around.
-               /* webView.destroy();
-                webView = null;*/
             }
         };
-
-
         printManager.print("MotoGP stats", adapter, null);
 
     }

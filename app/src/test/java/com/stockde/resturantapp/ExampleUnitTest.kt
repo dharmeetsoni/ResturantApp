@@ -1,4 +1,4 @@
-package com.stockde.resturantapp
+package com.stockde.thinkPosRestro
 
 import org.junit.Test
 

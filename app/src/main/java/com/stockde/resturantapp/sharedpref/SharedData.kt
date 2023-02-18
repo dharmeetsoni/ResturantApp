@@ -8,6 +8,7 @@ class SharedData {
     companion object{
         var sharedName = "DeviceData"
         var deviceKey = "DeviceAddress"
+        var urlKey = "Url"
     }
     constructor(context: Context){
         sharedPreference = context.getSharedPreferences(sharedName,Context.MODE_PRIVATE)
@@ -21,5 +22,15 @@ class SharedData {
 
     fun getDevice(): String {
         return sharedPreference?.getString(deviceKey,"").toString()
+    }
+
+    fun saveUrl(url: String){
+        var editor = sharedPreference?.edit()
+        editor?.putString(urlKey,url)
+        editor?.commit()
+    }
+
+    fun getUrl(): String {
+        return sharedPreference?.getString(urlKey,"http://ecom.stockde.com/").toString()
     }
 }

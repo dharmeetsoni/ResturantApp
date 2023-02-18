@@ -8,11 +8,13 @@
         android:id="@+id/title_paired_devices"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#666"
+        android:background="@android:color/holo_green_dark"
         android:paddingLeft="5dip"
         android:text="Bluetooth Printers"
-        android:textColor="#fff"
-        android:visibility="gone" />
+        android:textColor="@android:color/white"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="visible" />
 
     <ListView
         android:id="@+id/paired_devices"
@@ -20,5 +22,5 @@
         android:layout_height="wrap_content"
         android:background="#fff"
         android:layout_weight="1"
-        android:stackFromBottom="true" />
+        android:layout_marginTop="10sp"/>
 </LinearLayout>

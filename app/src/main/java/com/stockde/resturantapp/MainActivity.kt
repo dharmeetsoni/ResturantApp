@@ -41,17 +41,8 @@ class MainActivity : AppCompatActivity() , Runnable{
     }
 
     @SuppressLint("MissingPermission")
-    fun isBluetoothHeadsetConnected(): Boolean {
-        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        return (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled
-                && mBluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED)
-    }
-
-
-    @SuppressLint("MissingPermission")
     fun checkAndConnect(){
         var device = SharedData(this).getDevice()
-        Log.e("DEVICE",device)
 
         if(device != null && device.length > 0) {
             mBluetoothDevice = mBluetoothAdapter!!
@@ -230,13 +221,17 @@ class MainActivity : AppCompatActivity() , Runnable{
 
     @SuppressLint("MissingPermission")
     private fun ListPairedDevices() {
-        val mPairedDevices = mBluetoothAdapter!!.bondedDevices
-        if (mPairedDevices.size > 0) {
-            for (mDevice in mPairedDevices) {
-                Log.v(TAG, "PairedDevices: " + mDevice.name + "  "
-                        + mDevice.address)
+        try {
+            val mPairedDevices = mBluetoothAdapter!!.bondedDevices
+            if (mPairedDevices.size > 0) {
+                for (mDevice in mPairedDevices) {
+                    Log.v(TAG, "PairedDevices: " + mDevice.name + "  "
+                            + mDevice.address)
+                }
             }
+        }catch (e: Exception){
         }
+
     }
 
     @SuppressLint("MissingPermission")
@@ -246,6 +241,12 @@ class MainActivity : AppCompatActivity() , Runnable{
             mBluetoothAdapter!!.cancelDiscovery()
             mBluetoothSocket!!.connect()
             mHandler.sendEmptyMessage(0)
+            if (!intent.getBooleanExtra("isFromChangePrinter",false)){
+                val intent =  Intent(this,com.stockde.resturantapp.webview.MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+
         } catch (eConnectException: IOException) {
             Log.d(TAG, "CouldNotConnectToSocket", eConnectException)
             closeSocket(this!!.mBluetoothSocket!!)
